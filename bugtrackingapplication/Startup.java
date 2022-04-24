@@ -8,15 +8,15 @@ import java.util.Scanner;
 
 class Startup {
     
-	public void showDashboard(String[] handler) throws SQLException {
+	public void showDashboard(Scanner sc, String[] handler) throws SQLException {
 
 		switch(handler[1]) {
 			case "Admin":
 				AdminModule.showDashboard(handler[0]);
 				break;
 			case "Project Manager":
-				PMModule pmm = new PMModule();
-				pmm.showDashboard(handler[0]);
+				PMController pmc = new PMController();
+				pmc.showDashboard(sc, handler[0]);
 				break;
 			case "Developer":
 				DevModule.showDashboard(handler[0]);
@@ -51,7 +51,9 @@ class Startup {
 					LoginModule lm = new LoginModule();
 					sm.createNewUser(sc);
 					handler = lm.handleLogin(sc);
-					showDashboard(handler);
+					
+					if (handler[1].equals("Project Manager"))
+						showDashboard(sc, handler);
 					break;
 					
 				case 'n' : case 'N' :
@@ -60,7 +62,7 @@ class Startup {
 					
 					LoginModule nlm = new LoginModule();
 					handler = nlm.handleLogin(sc);
-					showDashboard(handler);
+					showDashboard(sc, handler);
 					break;
 					
 				default:

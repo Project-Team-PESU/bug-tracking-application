@@ -26,6 +26,7 @@ class LoginModule {
     	
     	int role; 
     	boolean loop = true;
+    	boolean wrong = false;
     	
     	String username, password, query;
     	String[] handles = new String[2];
@@ -70,23 +71,32 @@ class LoginModule {
 					break;
 			}
 	        try {
-	            statement = this.connection.prepareStatement(query);
-	            statement.setString(1, username);
-	            statement.setString(2, password);
-	            
-	            result = statement.executeQuery();
-	            
-	            if (result.next()) {
-	            	handles[0] = username;
-	            	return handles;
-	            } else
-	                System.out.println("\tUser not found or password incorrect. Please retry.");
+	        	if (query.equals("")) 
+	        		wrong = true;
+	        	else {
+		            statement = this.connection.prepareStatement(query);
+		            statement.setString(1, username);
+		            statement.setString(2, password);
+		            
+		            result = statement.executeQuery();
+	        	}
+	        	
+	            if (!wrong) {
+	            	if (result.next()) {
+		            	handles[0] = username;
+		            	return handles;
+	            	} else
+	            		System.out.println("\tUser not found or password incorrect. Please retry.");
+	            } else 
+	            	System.out.println("\tRole does not exist. Please retry.");
 	        } catch (SQLException e) {
 	        	System.out.println("Exception occurred in LoginModule.");
 	        	e.printStackTrace();
 	        } finally {
-	        	statement.close();
-	            result.close();
+	        	if (!wrong) {
+		        	statement.close();
+		            result.close();
+	        	}
 	        }
     	}
 		return handles;
