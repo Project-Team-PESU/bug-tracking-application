@@ -6,7 +6,7 @@ class AppMain {
 	public static void main(String[] args) {
 		Startup startup = new Startup();
 		try {
-			startup.handleLogin();
+			startup.startUpApp();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

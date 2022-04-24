@@ -29,7 +29,6 @@ class Startup {
     	
     	String empID, username, password, fname, lname, role, insert;
     	PreparedStatement statement = null;
-        ResultSet result = null;
         
 //        empID = RandomStringUtils.randomAlphabetic(10);
         empID = "Emp123";
@@ -46,10 +45,10 @@ class Startup {
 		System.out.print("\tRole (Admin/PM/Dev/Tester) : ");
 		role = sc.nextLine();
 		
-        if(role.equals("Admin"))
+        if (role.equals("Admin"))
         	insert = "INSERT INTO admins VALUES (?, ?, ?, ?, ?)";
         
-        else if(role.equals("PM"))
+        else if (role.equals("PM"))
         	insert = "INSERT INTO projectmanagers VALUES (?, ?, ?, ?, ?)";
         
         else if (role.equals("Dev"))
@@ -73,34 +72,89 @@ class Startup {
         }
     }
     
-	public void handleLogin() throws SQLException {
-		
-		char new_user;
-		String username, password;
-		
-		// Predefined standard input object
-		Scanner sc = new Scanner(System.in);
-		
-		System.out.println("***************** BUG TRACKER ********************");
-		System.out.print("\tNew User? [Y/n] ");
-		new_user = sc.next().charAt(0);
-		sc.nextLine();
-		
-		if ((new_user == 'Y') || new_user == 'y') {
+    public boolean handleLogin(Scanner sc) throws SQLException {
+    	
+    	int role; boolean loop = true;
+    	String empID, username, password, fname, lname, query;
+    	PreparedStatement statement = null;
+    	ResultSet result = null;
+        
+    	System.out.println("\n\t************ LOGIN ************");
+    	
+    	while (loop) {
+	    	System.out.print("\tAdmin-1\n\tProject Manager-2\nDeveloper-3\nTester-4\nEnter Number of your Role: ");
 			
-			createNewUser(sc);
-			
-		} else if ((new_user == 'n') || (new_user == 'N')) {
-			System.out.print("\tUsername : ");
-			
+	    	role = sc.nextInt(); sc.nextLine();
+	    	
+	    	System.out.print("\tUsername : ");
 			username = sc.nextLine();
 			
 			System.out.print("\tPassword : ");
 			password = sc.nextLine();
 			
-			System.out.println(username + ' ' + password);
+			if (role == 1)
+	            query = "SELECT * FROM admins where username = ? and password = ?";
+			
+	        else if (role == 2)
+	            query = "SELECT * FROM projectmanagers where username = ? and password = ?";
+			
+	        else if (role == 3)
+	        	query = "SELECT * FROM developers where username = ? and password = ?";
+			
+	        else
+	            query = "SELECT * FROM testers where username = ? and password = ?";
+			
+	        try {
+	            statement = this.connection.prepareStatement(query);
+	            statement.setString(1, username);
+	            statement.setString(2, password);
+	            
+	            result = statement.executeQuery();
+	            
+	            if(result.next())
+	                return true;
+	            else 
+	                System.out.println("User not found. Please retry.");
+	        } 
+	        catch (SQLException e) {
+	            return false;
+	        } 
+	        finally {
+	        	statement.close();
+	            result.close();
+	        }
+    	}
+		return false;
+    }
+    
+	public void startUpApp() throws SQLException {
+		
+		char new_user; 
+		boolean loop = true;
+		
+		// Predefined standard input object
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("***************** BUG TRACKER ********************");
+		
+		while(loop) {
+			System.out.print("\tNew User? [Y/n] ");
+			new_user = sc.next().charAt(0);
+			sc.nextLine();
+			
+			switch(new_user) {
+				case 'Y' : case 'y':
+					loop = false;
+					createNewUser(sc);
+					handleLogin(sc);
+					break;
+				case 'n' : case 'N' :
+					handleLogin(sc);
+				default:
+					break;
+			}
 		}
-//		verifyUsernamePassword(username, password);
+		
 		sc.close();
 	}
 }
