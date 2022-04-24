@@ -1,10 +1,10 @@
 use bugtracker;
 
-drop table admins;
-drop table projectmanagers;
-drop table developers;
 drop table bug;
 drop table project;
+drop table admins;
+drop table developers;
+drop table projectmanagers;
 
 create table admins (
 	fname varchar(255), 
@@ -56,4 +56,6 @@ create table project (
 	primary key (projectID),
 	foreign key (projectManagerUName) references projectmanagers(username)
 );
+
+
 

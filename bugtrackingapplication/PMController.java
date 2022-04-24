@@ -16,7 +16,7 @@ class PMController {
         displayOptions(sc, pmm);
 	}
 	
-	private void displayOptions(Scanner sc, PMModule pmm) {
+	private void displayOptions(Scanner sc, PMModule pmm) throws SQLException {
 		
 		boolean loop = false;
 		
