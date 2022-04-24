@@ -1,6 +1,7 @@
 use bugtracker;
 
 drop table bug;
+drop table TeamMembers;
 drop table project;
 drop table admins;
 drop table developers;
@@ -57,5 +58,12 @@ create table project (
 	foreign key (projectManagerUName) references projectmanagers(username)
 );
 
-
+create table TeamMembers (
+	id int,
+	empUName varchar(255),
+	projectID varchar(255),
+	foreign key (empUName) references developers(username),
+	foreign key (projectID) references project(projectID),
+	primary key (id)
+);
 

@@ -78,7 +78,7 @@ class PMModule {
             statement.setString(1, this.username);
             result = statement.executeQuery();
             if (!result.next())
-            	System.out.println("Error in PMController: getName()");
+            	System.out.println("Error in PMModule: getName()");
             else {
 	            do {
 	                pID = result.getString("projectID");
@@ -104,13 +104,119 @@ class PMModule {
         }
 	}
 
-	public void viewTeam() {
+	public String getProjectID(Scanner sc) throws SQLException {
 		
+		PreparedStatement statement = null;
+        ResultSet result = null;
+        
+    	String query, pID, inpID;
+    	
+        query = "SELECT projectID FROM project where projectManagerUName = ?";
+        
+        System.out.println("\tThe following are your project IDs. "
+        				 + "Choose one to list out team members under the project.");
+        
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, this.username);
+            result = statement.executeQuery();
+            if (!result.next())
+            	System.out.println("Error in PMModule: viewTeams()");
+            else {
+	            do {
+	                pID = result.getString("projectID");
+	            	System.out.println("ID : " + pID);
+	            } while (result.next());
+	            
+	            System.out.print("\tEnter a project ID :");
+	            inpID = sc.nextLine();
+	            return inpID;
+            }
+        } catch (SQLException e){
+        	e.printStackTrace();
+        } finally {
+            statement.close();
+            result.close();
+        }
+		return "";
+	}
+	
+public void viewTeams(Scanner sc) throws SQLException {
 		
+		PreparedStatement statement = null;
+        ResultSet result = null;
+        
+    	String query, pID, fname, username, lname;
+    	
+        query = "SELECT d.username, d.fname, d.lname "
+        	  + "FROM developers d JOIN TeamMembers tm "
+        	  + "ON d.username = tm.empUName "
+        	  + "WHERE projectID = ?";
+        
+        pID = getProjectID(sc);
+        
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, pID);
+            result = statement.executeQuery();
+            if (!result.next())
+            	System.out.println("Error in PMModule: viewTeams()");
+            else {
+            	System.out.println("Team Members of Project " + pID);
+	            do {
+	                username = result.getString("username");
+	            	fname = result.getString("fname");
+	            	lname = result.getString("lname");
+	         	            	
+	            	System.out.println("\t" + username + ' ' + fname + ' ' + lname);
+	            	
+	            } while (result.next());
+            }
+        } catch (SQLException e){
+        	e.printStackTrace();
+        } finally {
+            statement.close();
+            result.close();
+        }
 	}
 
-	public void viewBugs() {
-		// TODO Auto-generated method stub
+	public void viewBugs(Scanner sc) throws SQLException {
+		
+		PreparedStatement statement = null;
+        ResultSet result = null;
+        
+    	String query, pID, fname, username, lname;
+    	
+        query = "SELECT d.username, d.fname, d.lname "
+        	  + "FROM developers d JOIN TeamMembers tm "
+        	  + "ON d.username = tm.empUName "
+        	  + "WHERE projectID = ?";
+        
+        pID = getProjectID(sc);
+        
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setString(1, pID);
+            result = statement.executeQuery();
+            if (!result.next())
+            	System.out.println("Error in PMModule: viewTeams()");
+            else {
+            	System.out.println("Team Members of Project " + pID);
+	            do {
+	                username = result.getString("username");
+	            	fname = result.getString("fname");
+	            	lname = result.getString("lname");
+	         	            	
+	            	System.out.println("\t" + username + ' ' + fname + ' ' + lname);
+	            	
+	            } while (result.next());
+            }
+        } catch (SQLException e){
+        	e.printStackTrace();
+        } finally {
+            statement.close();
+            result.close();
+        }
 		
 	}
 

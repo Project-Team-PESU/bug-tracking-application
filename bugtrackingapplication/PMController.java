@@ -35,10 +35,10 @@ class PMController {
 				pmm.viewProjects();
 				break;
 			case 2:
-				pmm.viewTeam();
+				pmm.viewTeams(sc);
 				break;
 			case 3:
-				pmm.viewBugs();
+				pmm.viewBugs(sc);
 				break;
 			case 4:
 				pmm.changeProjectStatus();
