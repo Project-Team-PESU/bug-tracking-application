@@ -8,27 +8,27 @@ import java.sql.*;
  */
 class DBConn {  
     
-    public static void main(String args[]) {  
+	private static final String URL = "jdbc:mysql://localhost:3306/bugtracker";
+    private static String USERNAME = "root";
+    private static String PASSWORD = "password";
+    
+    public static void main(String args[]) throws SQLException {  
+    
+    }  
 
-        try{  
-            // Driver class
-            Class.forName("com.mysql.jdbc.Driver");  
-
+    public static Connection getConnection() throws SQLException {
+        try {
+        	// Driver class for MySQL 
+            Class.forName("com.mysql.jdbc.Driver");
+            
             // Pass in connection URL, username and password
             // Connection URL - API:DB://server-IP-and-port-where-SQL-runs/db-name
-            Connection con = DriverManager.getConnection(  
-                "jdbc:mysql://localhost:3306/bugtracker", "root", "password");  
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             
-            Statement stmt = con.createStatement();  
-
-            ResultSet rs = stmt.executeQuery("select * from emp");  
-            
-            while(rs.next())  {
-                System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getString(3));  
-            }
-            con.close();  
-        } catch(Exception e) { 
-            System.out.println("Exception occurred during DB connection : " + e);
-        }  
-    }  
+            return con;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }  
