@@ -16,7 +16,6 @@ class Startup {
 				break;
 			case "Project Manager":
 				PMModule pmm = new PMModule();
-				
 				pmm.showDashboard(handler[0]);
 				break;
 			case "Developer":

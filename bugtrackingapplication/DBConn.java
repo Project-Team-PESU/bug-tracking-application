@@ -21,7 +21,7 @@ class DBConn {
     public static Connection getConnection() throws SQLException {
         try {
         	// Driver class for MySQL 
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             
             // Pass in connection URL, username and password
             // Connection URL - API:DB://server-IP-and-port-where-SQL-runs/db-name

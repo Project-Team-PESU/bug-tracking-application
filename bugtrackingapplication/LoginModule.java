@@ -78,7 +78,6 @@ class LoginModule {
 	            
 	            if (result.next()) {
 	            	handles[0] = username;
-	            	System.out.println(handles[0] + ' ' + handles[1]);
 	            	return handles;
 	            } else
 	                System.out.println("\tUser not found or password incorrect. Please retry.");

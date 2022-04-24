@@ -20,21 +20,30 @@ class PMModule {
         return this.connection != null;
     }
     
-	public void showDashboard(String username) throws SQLException {
-		// TODO Auto-generated method stub
-		
-		PreparedStatement statement = null;
+    public String[] getName(String username) throws SQLException {
+    	
+    	String fname, lname, empID;
+    	
+    	PreparedStatement statement = null;
         ResultSet result = null;
         
-        String query;
+    	String query;
         query = "SELECT * FROM projectmanagers where username = ?";
         
         try {
             statement = connection.prepareStatement(query);
             statement.setString(1, username);
             result = statement.executeQuery();
-            if(result.next())
-                System.out.println(result);
+            if(result.next()) {
+                fname = result.getString("fname");
+            	lname = result.getString("lname");
+            	empID = result.getString("empID");
+            	
+            	System.out.println("Welcome " + fname + " " + lname + "!");
+            	
+            	String[] empinfo = {fname, lname, empID}; 
+            	return empinfo;
+            }
             else
             	System.out.println("Oh no!");
         } catch (SQLException e){
@@ -44,7 +53,18 @@ class PMModule {
             result.close();
         }
         
-		System.out.println("Welcome");
+        return new String[3];
+    }
+    
+	public void showDashboard(String username) throws SQLException {	
+		String fname, lname, empID;
+        
+        System.out.println("********* DASHBOARD *********");
+        
+        String[] empinfo = getName(username);
+        fname = empinfo[0];
+        lname = empinfo[1];
+        empID = empinfo[2];
 	}
 	
 }
