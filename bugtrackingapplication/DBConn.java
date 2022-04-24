@@ -1,3 +1,5 @@
+package bugtrackingapplication;
+
 import java.sql.*;  
 
 /**
@@ -26,9 +28,12 @@ class DBConn {
             Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD);
             
             return con;
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
+        	System.out.println("Exception occurred during DB connectivity: ");
+        	System.out.println(e);
             e.printStackTrace();
         }
+        
         return null;
     }
 }  
