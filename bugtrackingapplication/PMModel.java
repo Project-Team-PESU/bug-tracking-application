@@ -7,13 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-class PMModule {
+@SuppressWarnings("unused")
+class PMModel {
 	
-	String fname, lname, empID, username;
+	String fname, lname, username;
 	
 	Connection connection;
 	
-    public PMModule() {
+    public PMModel() {
         try {
             this.connection = DBConn.getConnection();
         } catch (SQLException e) {
@@ -27,7 +28,7 @@ class PMModule {
     
     public void getName(String username) throws SQLException {
     	
-    	String fname, lname, empID;
+    	String fname, lname;
     	
     	this.username = username;
     	
@@ -44,13 +45,11 @@ class PMModule {
             if(result.next()) {
                 fname = result.getString("fname");
             	lname = result.getString("lname");
-            	empID = result.getString("empID");
             	
             	System.out.println("Welcome " + fname + " " + lname + "!");
             	
             	this.fname = fname;
             	this.lname = lname;
-            	this.empID = empID;
             }
             else
             	System.out.println("Error in PMController: getName()");
@@ -221,12 +220,13 @@ public void viewTeams(Scanner sc) throws SQLException {
 	}
 
 	public void assignBugFixer() {
-		// TODO Auto-generated method stub
+		
+		
 		
 	}
 
 	public void changeProjectStatus() {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

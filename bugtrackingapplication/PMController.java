@@ -7,16 +7,16 @@ class PMController {
 
 	public void showDashboard(Scanner sc, String username) throws SQLException {	
 		
-		PMModule pmm = new PMModule();
+		PMModel pmm = new PMModel();
         
-        System.out.println("\t********* DASHBOARD *********");
+        System.out.println("\n\t********* DASHBOARD *********");
         
         pmm.getName(username);
         
         displayOptions(sc, pmm);
 	}
 	
-	private void displayOptions(Scanner sc, PMModule pmm) throws SQLException {
+	private void displayOptions(Scanner sc, PMModel pmm) throws SQLException {
 		
 		boolean loop = false;
 		
@@ -47,7 +47,7 @@ class PMController {
 				pmm.assignBugFixer();
 				break;
 			default:
-				System.out.print("Invalid option.");
+				System.out.println("\tInvalid option. Please retry.");
 				loop = true;
 				break;
 			}

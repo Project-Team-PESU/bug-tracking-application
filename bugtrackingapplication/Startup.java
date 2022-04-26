@@ -1,13 +1,24 @@
 package bugtrackingapplication;
 
-
 import java.sql.SQLException;
 import java.util.Scanner;
 
-//import org.apache.commons.lang3.RandomStringUtils;
-
+/**
+ * Singleton class that drives the application
+ * @author nushkash
+ *
+ */
 class Startup {
     
+	private static Startup instance = null;
+	
+	public static Startup getInstance() {
+		if (instance == null)
+			instance = new Startup();
+		
+		return instance;
+	}
+	
 	public void showDashboard(Scanner sc, String[] handler) throws SQLException {
 
 		switch(handler[1]) {
@@ -47,13 +58,16 @@ class Startup {
 				case 'Y' : case 'y':
 					
 					loop = false;
-					SignupModule sm = new SignupModule();
+					
+					SignupController sm = new SignupController();
 					LoginModule lm = new LoginModule();
+					
 					sm.createNewUser(sc);
+					System.out.println("\n\tPlease login with your credentials.");
 					handler = lm.handleLogin(sc);
 					
-					if (handler[1].equals("Project Manager"))
-						showDashboard(sc, handler);
+					
+					showDashboard(sc, handler);
 					break;
 					
 				case 'n' : case 'N' :
