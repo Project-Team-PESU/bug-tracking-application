@@ -60,14 +60,12 @@ create table bug (
 	bugStatus project_status,
 	bugPriority project_priority, 
 	bugOwnerUName varchar(255), 
-	bugFixerUName varchar(255),
 	createdDate DATE, 
 	resolvedDate DATE, 
 	lastUpdatedDate DATE, 
 	description varchar(255), 
 	resolutionDesc varchar(255),
 	primary key (bugID),
-	foreign key (bugFixerUName) references developers(username),
 	foreign key (bugOwnerUName) references testers(username),
 	foreign key (projectID) references project(projectID)
 );
@@ -110,9 +108,9 @@ INSERT INTO testers VALUES ('Celine', 'Dione', 'celinedione', 'tester2');
 INSERT INTO testers VALUES ('Gandalf', 'Trello', 'trellogandalf', 'tester3');
 
 /* bug table */
-INSERT INTO bug VALUES (5, 3, 'INITIATED', 'MODERATE', 'janesmith', 'karthik56', '2022-04-25', NULL, '2022-04-29', 'Input file size limit not set, dangerous if left as is', '');
-INSERT INTO bug VALUES (7, 1, 'RESOLVED', 'HIGH', 'celinedione', 'simonray', '2022-04-05', '2022-04-07', '2022-04-07', 'System crashes on input of non-mp4 format video stream data', 'Input sanitation code added');
-INSERT INTO bug VALUES (3, 2, 'OVERDUE', 'LOW', 'trellogandalf', 'lukelockhart', '2022-03-31', NULL, '2022-04-11', 'Double log entries upon employee leaving organization', '');
+INSERT INTO bug VALUES (5, 3, 'INITIATED', 'MODERATE', 'janesmith', '2022-04-25', NULL, '2022-04-29', 'Input file size limit not set, dangerous if left as is', '');
+INSERT INTO bug VALUES (7, 1, 'RESOLVED', 'HIGH', 'celinedione', '2022-04-05', '2022-04-07', '2022-04-07', 'System crashes on input of non-mp4 format video stream data', 'Input sanitation code added');
+INSERT INTO bug VALUES (3, 2, 'OVERDUE', 'LOW', 'trellogandalf', '2022-03-31', NULL, '2022-04-11', 'Double log entries upon employee leaving organization', '');
 
 /* 
 	Fix for bugid 2 : Conditional loop fixed for employee leaving organization, logs functioning as expected 

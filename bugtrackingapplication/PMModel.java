@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 @SuppressWarnings("unused")
 class PMModel {
 	
@@ -14,19 +15,28 @@ class PMModel {
 	
 	Connection connection;
 	
-    public PMModel() {
+    public PMModel(String username) throws SQLException {
         try {
             this.connection = DBConn.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
+        // Set the PM instance's variables
+        getPMName(username);
     }
     
     public boolean isConnected() {
         return this.connection != null;
     }
     
-    public void getName(String username) throws SQLException {
+    /**
+     * Retrieve the project manager's first and last names
+     * and sets as the object's instance variables
+     * @param username : PM's username
+     * @throws SQLException
+     */
+    public void getPMName(String username) throws SQLException {
     	
     	String fname, lname;
     	
@@ -52,7 +62,7 @@ class PMModel {
             	this.lname = lname;
             }
             else
-            	System.out.println("Error in PMController: getName()");
+            	System.out.println("Error in PMController: getPMName()");
         } catch (SQLException e){
         	e.printStackTrace();
         } finally {
@@ -61,7 +71,11 @@ class PMModel {
         }
     }
 
-	public void viewProjects() throws SQLException {
+    /**
+     * Get details of all the projects handled by the project manager
+     * @throws SQLException
+     */
+	public void viewPMProjects() throws SQLException {
 		PreparedStatement statement = null;
         ResultSet result = null;
         
@@ -77,8 +91,10 @@ class PMModel {
             statement.setString(1, this.username);
             result = statement.executeQuery();
             if (!result.next())
-            	System.out.println("Error in PMModule: getName()");
+            	System.out.println("Error in PMModule: viewPMProjects()");
             else {
+            	System.out.println("\tYour projects:");
+            	int i = 1;
 	            do {
 	                pID = result.getString("projectID");
 	            	pName = result.getString("projectName");
@@ -87,7 +103,7 @@ class PMModel {
 	            	
 	            	pDeadline = new java.util.Date(pDeadlineInit.getTime());
 	            	
-	            	System.out.println("\tProject Details");
+	            	System.out.println("\tProject " + Integer.toString(i++) + " :");
 	            	System.out.println("ID : " + pID);
 	            	System.out.println("Name : " + pName);
 	            	System.out.println("Description : " + pDesc);
@@ -103,123 +119,125 @@ class PMModel {
         }
 	}
 
-	public String getProjectID(Scanner sc) throws SQLException {
+	public void executeTeamQueries(String pID, String query) throws SQLException {
+		
+		String fname, username, lname;
 		
 		PreparedStatement statement = null;
-        ResultSet result = null;
-        
-    	String query, pID, inpID;
-    	
-        query = "SELECT projectID FROM project where projectManagerUName = ?";
-        
-        System.out.println("\tThe following are your project IDs. "
-        				 + "Choose one to list out team members under the project.");
-        
-        try {
-            statement = connection.prepareStatement(query);
-            statement.setString(1, this.username);
-            result = statement.executeQuery();
-            if (!result.next())
-            	System.out.println("Error in PMModule: viewTeams()");
-            else {
-	            do {
-	                pID = result.getString("projectID");
-	            	System.out.println("ID : " + pID);
-	            } while (result.next());
-	            
-	            System.out.print("\tEnter a project ID :");
-	            inpID = sc.nextLine();
-	            return inpID;
-            }
-        } catch (SQLException e){
-        	e.printStackTrace();
-        } finally {
-            statement.close();
-            result.close();
-        }
-		return "";
-	}
-	
-public void viewTeams(Scanner sc) throws SQLException {
-		
-		PreparedStatement statement = null;
-        ResultSet result = null;
-        
-    	String query, pID, fname, username, lname;
-    	
-        query = "SELECT d.username, d.fname, d.lname "
-        	  + "FROM developers d JOIN TeamMembers tm "
-        	  + "ON d.username = tm.empUName "
-        	  + "WHERE projectID = ?";
-        
-        pID = getProjectID(sc);
-        
-        try {
-            statement = connection.prepareStatement(query);
-            statement.setString(1, pID);
-            result = statement.executeQuery();
-            if (!result.next())
-            	System.out.println("Error in PMModule: viewTeams()");
-            else {
-            	System.out.println("Team Members of Project " + pID);
-	            do {
+	    ResultSet result = null;
+	    
+		try {
+	        statement = connection.prepareStatement(query);
+	        statement.setString(1, pID);
+	        result = statement.executeQuery();
+	        if (result.next())
+	        	do {
 	                username = result.getString("username");
 	            	fname = result.getString("fname");
 	            	lname = result.getString("lname");
 	         	            	
-	            	System.out.println("\t" + username + ' ' + fname + ' ' + lname);
+	            	System.out.println("\tUser" + username + " : " + fname + ' ' + lname);
 	            	
 	            } while (result.next());
-            }
-        } catch (SQLException e){
-        	e.printStackTrace();
-        } finally {
-            statement.close();
-            result.close();
-        }
+	    } catch (SQLException e){
+	    	e.printStackTrace();
+	    } finally {
+	        statement.close();
+	        result.close();
+	    }
+		
+	}
+
+	public void viewTeamMembers(Scanner sc) throws SQLException {
+        
+    	String query1, query2, query3, query4, pID;
+    	
+        query1 = "SELECT d.username, d.fname, d.lname "
+        	  + "FROM developers d JOIN TeamMembers tm "
+        	  + "ON d.username = tm.empUName "
+        	  + "WHERE projectID = ?";
+        query2 = "SELECT d.username, d.fname, d.lname "
+          	  + "FROM projectmanagers d JOIN TeamMembers tm "
+          	  + "ON d.username = tm.empUName "
+          	  + "WHERE projectID = ?";
+        query3 = "SELECT d.username, d.fname, d.lname "
+            	  + "FROM admins d JOIN TeamMembers tm "
+            	  + "ON d.username = tm.empUName "
+            	  + "WHERE projectID = ?";
+        query4 = "SELECT d.username, d.fname, d.lname "
+          	  + "FROM testers d JOIN TeamMembers tm "
+          	  + "ON d.username = tm.empUName "
+          	  + "WHERE projectID = ?";
+        
+        System.out.println("\tThe following are your projects and their IDs. ");
+        viewPMProjects();
+        System.out.print("\tEnter the project ID of the team you want to view: ");
+        
+        pID = sc.nextLine();
+        
+        System.out.println("\tTeam Members of Project " + pID + " : ");
+        
+        executeTeamQueries(pID, query1);
+        executeTeamQueries(pID, query2);
+        executeTeamQueries(pID, query3);
+        executeTeamQueries(pID, query4);
 	}
 
 	public void viewBugs(Scanner sc) throws SQLException {
 		
+		String pID, query;
+		
+		String bugID, bugStatus, bugPriority, bugOwnerUName, bugFixerUName, createdDate,
+				resolvedDate, lastUpdatedDate, description, resolutionDesc;
+		
 		PreparedStatement statement = null;
-        ResultSet result = null;
+	    ResultSet result = null;
+		
+		System.out.println("\tThe following are your projects and their IDs. ");
+        viewPMProjects();
+        System.out.print("\tEnter the project ID of the team you want to view: ");
+        pID = sc.nextLine();
         
-    	String query, pID, fname, username, lname;
-    	
-        query = "SELECT d.username, d.fname, d.lname "
-        	  + "FROM developers d JOIN TeamMembers tm "
-        	  + "ON d.username = tm.empUName "
-        	  + "WHERE projectID = ?";
+        System.out.println("\tDetails of bugs registered in Project " + pID + " : ");
         
-        pID = getProjectID(sc);
+        query = "SELECT * FROM bug WHERE projectID = ?";
         
         try {
-            statement = connection.prepareStatement(query);
-            statement.setString(1, pID);
-            result = statement.executeQuery();
-            if (!result.next())
-            	System.out.println("Error in PMModule: viewTeams()");
-            else {
-            	System.out.println("Team Members of Project " + pID);
-	            do {
-	                username = result.getString("username");
-	            	fname = result.getString("fname");
-	            	lname = result.getString("lname");
+	        statement = connection.prepareStatement(query);
+	        statement.setString(1, pID);
+	        result = statement.executeQuery();
+	        if (result.next()) {
+	        	System.out.println("\tID\tStatus\tPriority\tOwner\tFixer\tCreated\tResolved\tLast Updated\tDescription\tResolution");
+	        	System.out.println("-------------------------------------------------------------------------------------------------------");
+	        	do {
+	                bugID = result.getString("bugID");
+	                bugStatus = result.getString("bugStatus");
+	                bugPriority = result.getString("bugPriority");
+	                bugOwnerUName = result.getString("bugOwnerUName");
+	                bugFixerUName = result.getString("bugFixerUName");
+	                createdDate = result.getString("createdDate");
+	                resolvedDate = result.getString("resolvedDate");
+	                lastUpdatedDate = result.getString("lastUpdatedDate");
+	                description = result.getString("description");
+	                resolutionDesc = result.getString("resolutionDesc");
 	         	            	
-	            	System.out.println("\t" + username + ' ' + fname + ' ' + lname);
-	            	
+	            	System.out.println("\t" + bugID + '\t' + bugStatus + '\t' + bugPriority 
+	            			+ '\t' + bugOwnerUName + '\t' + bugFixerUName + '\t' + createdDate 
+	            			+ '\t' + resolvedDate + '\t' + lastUpdatedDate + '\t' + description 
+	            			+ '\t' + resolutionDesc);
 	            } while (result.next());
-            }
-        } catch (SQLException e){
-        	e.printStackTrace();
-        } finally {
-            statement.close();
-            result.close();
-        }
-		
+	        }
+	    } catch (SQLException e) {
+	    	e.printStackTrace();
+	    } finally {
+	        statement.close();
+	        result.close();
+	    }
+        
 	}
 
-	public void assignBugFixer() {
+	public void assignOrChangeBugFixer() {
+		
 		
 		
 		

@@ -7,35 +7,36 @@ class PMController {
 
 	public void showDashboard(Scanner sc, String username) throws SQLException {	
 		
-		PMModel pmm = new PMModel();
+		PMModel pmm = new PMModel(username);
         
         System.out.println("\n\t********* DASHBOARD *********");
         
-        pmm.getName(username);
+        pmm.getPMName(username);
         
         displayOptions(sc, pmm);
 	}
 	
 	private void displayOptions(Scanner sc, PMModel pmm) throws SQLException {
 		
-		boolean loop = false;
+		boolean loop = true;
 		
-		System.out.println("\t\t***** MENU (Choose option) ****");
+		System.out.println("\n\t\t***** MENU (Choose option) ****");
 		System.out.println("\t1. View all projects\n"
 						 + "\t2. View team members\n"
 						 + "\t3. View all bugs\n"
 						 + "\t4. Change project status\n"
-						 + "\t5. Assign/change bug fixer");
+						 + "\t5. Assign/change bug fixer\n"
+						 + "\t6. Sign out\n");
 		do {
-			System.out.print("Enter your option : ");
+			System.out.print("\n\tEnter your option : ");
 			int option = sc.nextInt(); sc.nextLine();
 			
 			switch(option) {
 			case 1:
-				pmm.viewProjects();
+				pmm.viewPMProjects();
 				break;
 			case 2:
-				pmm.viewTeams(sc);
+				pmm.viewTeamMembers(sc);
 				break;
 			case 3:
 				pmm.viewBugs(sc);
@@ -44,11 +45,14 @@ class PMController {
 				pmm.changeProjectStatus();
 				break;
 			case 5:
-				pmm.assignBugFixer();
+				pmm.assignOrChangeBugFixer();
+				break;
+			case 6:
+				loop = false;
+				// TODO Handle sign out!
 				break;
 			default:
 				System.out.println("\tInvalid option. Please retry.");
-				loop = true;
 				break;
 			}
 		} while(loop);

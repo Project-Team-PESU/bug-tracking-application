@@ -60,11 +60,11 @@ class Startup {
 					loop = false;
 					
 					SignupController sm = new SignupController();
-					LoginModule lm = new LoginModule();
+					LoginController lc = new LoginController();
 					
 					sm.createNewUser(sc);
 					System.out.println("\n\tPlease login with your credentials.");
-					handler = lm.handleLogin(sc);
+					handler = lc.handleLogin(sc);
 					
 					
 					showDashboard(sc, handler);
@@ -74,8 +74,8 @@ class Startup {
 					
 					loop = false;
 					
-					LoginModule nlm = new LoginModule();
-					handler = nlm.handleLogin(sc);
+					LoginController nlc = new LoginController();
+					handler = nlc.handleLogin(sc);
 					showDashboard(sc, handler);
 					break;
 					
