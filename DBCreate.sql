@@ -8,7 +8,6 @@ drop table if exists projectmanagers;
 drop table if exists developers;
 drop table if exists testers;
 
-
 create table admins (
 	fname varchar(255), 
 	lname varchar(255), 
@@ -51,14 +50,11 @@ create table testers (
 	primary key (username)
 );
 
-CREATE TYPE project_status AS ENUM ('INITIATED', 'RESOLVED', 'OVERDUE');
-CREATE TYPE project_priority AS ENUM ('HIGH', 'MODERATE', 'LOW');
-
 create table bug (
 	bugID varchar(255), 
 	projectID varchar(255),
-	bugStatus project_status,
-	bugPriority project_priority, 
+	bugStatus ENUM('INITIATED', 'RESOLVED', 'OVERDUE'),
+	bugPriority ENUM('HIGH', 'MODERATE', 'LOW'), 
 	bugOwnerUName varchar(255), 
 	bugFixerUName varchar(255),
 	createdDate DATE, 
@@ -79,7 +75,8 @@ create table TeamMembers (
 	projectID varchar(255),
 	foreign key (projectID) references project(projectID),
 	primary key (id)
-); /* NOTE: REMOVED CONSTRAINT "foreign key (empUName) references developers(username)" BECAUSE IN THIS DB, 
+); 
+/* NOTE: REMOVED CONSTRAINT "foreign key (empUName) references developers(username)" BECAUSE IN THIS DB, 
 I'VE PUT ALL ROLES (ADMIN / PROJECT MANAGER / DEVELOPER / TESTER) IN SOME TEAM */
 
 

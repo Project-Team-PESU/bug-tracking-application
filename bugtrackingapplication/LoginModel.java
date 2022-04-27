@@ -21,6 +21,14 @@ class LoginModel {
         return this.connection != null;
     }
     
+    /**
+     * Checks if the user exists
+     * @param username
+     * @param password
+     * @param query
+     * @return
+     * @throws SQLException
+     */
     public int doesUserExist(String username, String password, String query) throws SQLException {
     	
     	boolean loop = true;
@@ -38,9 +46,10 @@ class LoginModel {
 	            result = statement.executeQuery();
 	        	
             	if (result.next())
-	            	return 1;
+	            	return 1;	// User does exist
             	else
-            		return 0;
+            		return 0;	// User does not exist
+            	
 	        } catch (SQLException e) {
 	        	System.out.println("Exception occurred in LoginModel.");
 	        	e.printStackTrace();
@@ -51,6 +60,6 @@ class LoginModel {
 	        	}
 	        }
     	}
-		return -1;
+		return -1;	// Query is wrong
     }
 }

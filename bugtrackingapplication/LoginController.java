@@ -19,7 +19,7 @@ class LoginController {
     	System.out.println("\tAdmin : 1\n\tProject Manager : 2\n\tDeveloper : 3\n\tTester : 4");
     	
     	while (loop) {
-	    	System.out.print("\tEnter your role : ");
+	    	System.out.print("\n\tEnter your role > ");
 			
 	    	try {
 	    		role = sc.nextInt(); sc.nextLine();
@@ -28,11 +28,10 @@ class LoginController {
 	    		continue;
 	    	}
 	    	
-	    	// TODO: Do not allow duplicate usernames!
-	    	System.out.print("\tUsername : ");
+	    	System.out.print("\tUsername > ");
 			username = sc.nextLine();
 			
-			System.out.print("\tPassword : ");
+			System.out.print("\tPassword > ");
 			password = sc.nextLine();
 			
 			switch(role) {
@@ -64,11 +63,12 @@ class LoginController {
 			case 0:
 				System.out.println("\tUser not found or password incorrect. Please retry.");
 				continue;
-			case 1:
+			case -1:
 				System.out.println("\tRole does not exist. Please retry.");
 				continue;
-			case 2:
+			case 1:
 				loop = false;
+				handles[0] = username;
 				break;
 	        }
     	}

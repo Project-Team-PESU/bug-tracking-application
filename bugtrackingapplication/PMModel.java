@@ -52,11 +52,12 @@ class PMModel {
             statement = connection.prepareStatement(query);
             statement.setString(1, username);
             result = statement.executeQuery();
+            
+            // Returns: a ResultSet object that contains the data produced by the given query; never null
+            
             if(result.next()) {
                 fname = result.getString("fname");
             	lname = result.getString("lname");
-            	
-            	System.out.println("Welcome " + fname + " " + lname + "!");
             	
             	this.fname = fname;
             	this.lname = lname;
@@ -93,7 +94,8 @@ class PMModel {
             if (!result.next())
             	System.out.println("Error in PMModule: viewPMProjects()");
             else {
-            	System.out.println("\tYour projects:");
+            	System.out.println("\n\t\tYour Projects");
+            	System.out.println("\t-----------------------------------");
             	int i = 1;
 	            do {
 	                pID = result.getString("projectID");
@@ -103,12 +105,11 @@ class PMModel {
 	            	
 	            	pDeadline = new java.util.Date(pDeadlineInit.getTime());
 	            	
-	            	System.out.println("\tProject " + Integer.toString(i++) + " :");
-	            	System.out.println("ID : " + pID);
-	            	System.out.println("Name : " + pName);
-	            	System.out.println("Description : " + pDesc);
-	            	System.out.println("Deadline : " + pDeadline);
-	            	
+	            	System.out.println("\tProject " + Integer.toString(i++));
+	            	System.out.println("\t   * " + pName + " | ID " + pID);
+	            	System.out.println("\t   * " + pDesc);
+	            	System.out.println("\t   * Due on " + pDeadline);
+	            	System.out.println();
 	            } while (result.next());
             }
         } catch (SQLException e){
@@ -136,7 +137,7 @@ class PMModel {
 	            	fname = result.getString("fname");
 	            	lname = result.getString("lname");
 	         	            	
-	            	System.out.println("\tUser" + username + " : " + fname + ' ' + lname);
+	            	System.out.println("\t   * " + username + " - " + fname + ' ' + lname);
 	            	
 	            } while (result.next());
 	    } catch (SQLException e){
@@ -171,11 +172,12 @@ class PMModel {
         
         System.out.println("\tThe following are your projects and their IDs. ");
         viewPMProjects();
-        System.out.print("\tEnter the project ID of the team you want to view: ");
+        System.out.print("\tEnter the project ID of the team you want to view > ");
         
         pID = sc.nextLine();
         
-        System.out.println("\tTeam Members of Project " + pID + " : ");
+        System.out.println("\n\t    Team Members of Project " + pID);
+        System.out.println("\t-----------------------------------");
         
         executeTeamQueries(pID, query1);
         executeTeamQueries(pID, query2);
@@ -183,22 +185,17 @@ class PMModel {
         executeTeamQueries(pID, query4);
 	}
 
-	public void viewBugs(Scanner sc) throws SQLException {
+	public void getBugsWithProjectID(String pID) throws SQLException {
 		
-		String pID, query;
+		String query;
 		
 		String bugID, bugStatus, bugPriority, bugOwnerUName, bugFixerUName, createdDate,
-				resolvedDate, lastUpdatedDate, description, resolutionDesc;
-		
+		resolvedDate, lastUpdatedDate, description, resolutionDesc;
+
 		PreparedStatement statement = null;
-	    ResultSet result = null;
-		
-		System.out.println("\tThe following are your projects and their IDs. ");
-        viewPMProjects();
-        System.out.print("\tEnter the project ID of the team you want to view: ");
-        pID = sc.nextLine();
-        
-        System.out.println("\tDetails of bugs registered in Project " + pID + " : ");
+		ResultSet result = null;
+
+		System.out.println("\tDetails of bugs registered in Project " + pID);
         
         query = "SELECT * FROM bug WHERE projectID = ?";
         
@@ -207,8 +204,6 @@ class PMModel {
 	        statement.setString(1, pID);
 	        result = statement.executeQuery();
 	        if (result.next()) {
-	        	System.out.println("\tID\tStatus\tPriority\tOwner\tFixer\tCreated\tResolved\tLast Updated\tDescription\tResolution");
-	        	System.out.println("-------------------------------------------------------------------------------------------------------");
 	        	do {
 	                bugID = result.getString("bugID");
 	                bugStatus = result.getString("bugStatus");
@@ -221,10 +216,18 @@ class PMModel {
 	                description = result.getString("description");
 	                resolutionDesc = result.getString("resolutionDesc");
 	         	            	
-	            	System.out.println("\t" + bugID + '\t' + bugStatus + '\t' + bugPriority 
-	            			+ '\t' + bugOwnerUName + '\t' + bugFixerUName + '\t' + createdDate 
-	            			+ '\t' + resolvedDate + '\t' + lastUpdatedDate + '\t' + description 
-	            			+ '\t' + resolutionDesc);
+	            	System.out.println("\n\t\tBug ID " + bugID + " Details");
+	            	System.out.println("\t-----------------------------------");
+	            	System.out.println("\t   * Status - " + bugStatus);
+	            	System.out.println("\t   * Priority - " + bugPriority);
+	            	System.out.println("\t   * Owner (Dev) - " + bugOwnerUName);
+	            	System.out.println("\t   * Assigned to (Tester) - " + bugFixerUName);
+	            	System.out.println("\t   * Created on - " + createdDate);
+	            	System.out.println("\t   * Resolved on - " + resolvedDate);
+	            	System.out.println("\t   * Last updated on - " + lastUpdatedDate);
+	            	System.out.println("\t   * Description - " + description);
+	            	System.out.println("\t   * Resolution Description - " + resolutionDesc);
+	            	
 	            } while (result.next());
 	        }
 	    } catch (SQLException e) {
@@ -233,18 +236,69 @@ class PMModel {
 	        statement.close();
 	        result.close();
 	    }
+	}
+	
+	public void viewAllBugs(Scanner sc) throws SQLException {
+		
+		String pID;
+		
+		System.out.println("\tThe following are your projects and their IDs. ");
+        viewPMProjects();
+        System.out.print("\n\tEnter the project ID of the team you want to view > ");
+        pID = sc.nextLine();
         
+        getBugsWithProjectID(pID);
 	}
 
-	public void assignOrChangeBugFixer() {
-		
-		
-		
-		
+	public void viewDevsOnTeam(String pID) throws SQLException {
+        
+    	String query;
+    	
+        query = "SELECT d.username, d.fname, d.lname "
+        	  + "FROM developers d JOIN TeamMembers tm "
+        	  + "ON d.username = tm.empUName "
+        	  + "WHERE projectID = ?";
+        
+        System.out.println("\n\t\tDevelopers of Project " + pID);
+        System.out.println("\t-----------------------------------");
+        executeTeamQueries(pID, query);
 	}
 
-	public void changeProjectStatus() {
+	public void assignOrChangeBugFixer(Scanner sc) throws SQLException {
 		
+		String pID, bID, devID, update;
 		
+		PreparedStatement statement = null;
+		
+		System.out.println("\tThe following are your projects and their IDs. ");
+        viewPMProjects();
+        System.out.print("\n\tEnter the project ID with the bugs to be altered > ");
+        pID = sc.nextLine();
+        
+        getBugsWithProjectID(pID);
+        
+        System.out.print("\n\tEnter the bug ID of the bug to be altered > ");
+        bID = sc.nextLine();
+        
+        System.out.print("\n\tThe following are the usernames of the developers on the team.");
+        viewDevsOnTeam(pID);
+        
+        System.out.print("\tEnter the username of the new developer >");
+        devID = sc.nextLine();
+        
+        update = "UPDATE bug SET bugFixerUName=? WHERE bugID=? AND projectID=?";
+        
+        try {
+            statement = this.connection.prepareStatement(update);
+            statement.setString(1, bID);
+            statement.setString(2, devID);
+            statement.setString(3, pID);
+            statement.execute();
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        } finally {
+            statement.close();
+        }
+        
 	}
 }

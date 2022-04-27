@@ -76,7 +76,9 @@ class Startup {
 					
 					LoginController nlc = new LoginController();
 					handler = nlc.handleLogin(sc);
+					
 					showDashboard(sc, handler);
+					
 					break;
 					
 				default:

@@ -9,9 +9,10 @@ class PMController {
 		
 		PMModel pmm = new PMModel(username);
         
-        System.out.println("\n\t********* DASHBOARD *********");
+        System.out.println("\n\t*********** DASHBOARD ***********");
         
         pmm.getPMName(username);
+        System.out.println("\tWelcome " + pmm.fname + " " + pmm.lname + "!");
         
         displayOptions(sc, pmm);
 	}
@@ -20,15 +21,14 @@ class PMController {
 		
 		boolean loop = true;
 		
-		System.out.println("\n\t\t***** MENU (Choose option) ****");
+		System.out.println("\n\t****** MENU (Choose option) ****");
 		System.out.println("\t1. View all projects\n"
 						 + "\t2. View team members\n"
 						 + "\t3. View all bugs\n"
-						 + "\t4. Change project status\n"
-						 + "\t5. Assign/change bug fixer\n"
-						 + "\t6. Sign out\n");
+						 + "\t4. Assign/change bug fixer\n"
+						 + "\t5. Sign out");
 		do {
-			System.out.print("\n\tEnter your option : ");
+			System.out.print("\n\tEnter your option > ");
 			int option = sc.nextInt(); sc.nextLine();
 			
 			switch(option) {
@@ -39,15 +39,12 @@ class PMController {
 				pmm.viewTeamMembers(sc);
 				break;
 			case 3:
-				pmm.viewBugs(sc);
+				pmm.viewAllBugs(sc);
 				break;
 			case 4:
-				pmm.changeProjectStatus();
+				pmm.assignOrChangeBugFixer(sc);
 				break;
 			case 5:
-				pmm.assignOrChangeBugFixer();
-				break;
-			case 6:
 				loop = false;
 				// TODO Handle sign out!
 				break;
