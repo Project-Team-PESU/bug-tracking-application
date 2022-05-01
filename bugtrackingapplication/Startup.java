@@ -23,17 +23,19 @@ class Startup {
 
 		switch(handler[1]) {
 			case "Admin":
-				AdminModule.showDashboard(handler[0]);
-				break;
+//				AdminController amc = new AdminController();
+//				amc.showDashboard(sc, handler[0]);
 			case "Project Manager":
 				PMController pmc = new PMController();
 				pmc.showDashboard(sc, handler[0]);
 				break;
 			case "Developer":
-				DevModule.showDashboard(handler[0]);
+				DevController dvc = new DevController();
+				dvc.showDashboard(sc, handler[0]);
 				break;
 			case "Tester":
-				TesterModule.showDashboard(handler[0]);
+				TestController tsc = new TestController();
+				tsc.showDashboard(sc, handler[0]);
 				break;
 		}
 	}
@@ -47,18 +49,14 @@ class Startup {
 		// Predefined standard input object
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("***************** BUG TRACKER ********************");
-		
 		while(loop) {
+			System.out.println("\n***************** BUG TRACKER ********************");
 			System.out.print("\tNew User? [Y/n] ");
 			new_user = sc.next().charAt(0);
 			sc.nextLine();
 			
 			switch(new_user) {
 				case 'Y' : case 'y':
-					
-					loop = false;
-					
 					SignupController sm = new SignupController();
 					LoginController lc = new LoginController();
 					
@@ -71,9 +69,7 @@ class Startup {
 					break;
 					
 				case 'n' : case 'N' :
-					
-					loop = false;
-					
+
 					LoginController nlc = new LoginController();
 					handler = nlc.handleLogin(sc);
 					

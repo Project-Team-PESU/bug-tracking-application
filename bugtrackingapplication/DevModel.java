@@ -1,42 +1,28 @@
 package bugtrackingapplication;
 
-import java.sql.*;
-import java.util.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 
+class DevModel {
 
-@SuppressWarnings("unused")
-class PMModel {
-	
 	String fname, lname, username;
 	
 	Connection connection;
 	
-    public PMModel(String username) throws SQLException {
+    public DevModel(String username) throws SQLException {
         try {
             this.connection = DBConn.getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
         // Set the PM instance's variables
-        getPMName(username);
+        getDevName(username);
     }
     
-    public boolean isConnected() {
-        return this.connection != null;
-    }
-    
-    /**
-     * Retrieve the project manager's first and last names
-     * and sets as the object's instance variables
-     * @param username : PM's username
-     * @throws SQLException
-     */
-    public void getPMName(String username) throws SQLException {
+    public void getDevName(String username) throws SQLException {
     	
     	String fname, lname;
     	
@@ -46,7 +32,7 @@ class PMModel {
         ResultSet result = null;
         
     	String query;
-        query = "SELECT * FROM projectmanagers where username = ?";
+        query = "SELECT * FROM developers where username = ?";
         
         try {
             statement = connection.prepareStatement(query);
@@ -63,7 +49,7 @@ class PMModel {
             	this.lname = lname;
             }
             else
-            	System.out.println("Error in PMController: getPMName()");
+            	System.out.println("Error in DevModel: getDevName()");
         } catch (SQLException e){
         	e.printStackTrace();
         } finally {
@@ -72,11 +58,11 @@ class PMModel {
         }
     }
 
-    /**
-     * Get details of all the projects handled by the project manager
-     * @throws SQLException
-     */
-	public void viewPMProjects() throws SQLException {
+    public boolean isConnected() {
+        return this.connection != null;
+    }
+    
+    public void viewProjects() throws SQLException {
 		PreparedStatement statement = null;
         ResultSet result = null;
         
@@ -85,7 +71,7 @@ class PMModel {
     	java.sql.Date pDeadlineInit;
     	java.util.Date pDeadline;
     	
-        query = "SELECT * FROM project where projectManagerUName = ?";
+        query = "SELECT TeamMembers.projectID, projectName, projectDesc, projectDeadline FROM TeamMembers join project on TeamMembers.projectID = project.projectID where empUName = ?";
         
         try {
             statement = connection.prepareStatement(query);
@@ -119,8 +105,8 @@ class PMModel {
             result.close();
         }
 	}
-
-	public void executeTeamQueries(String pID, String query) throws SQLException {
+    
+    public void executeTeamQueries(String pID, String query, String role) throws SQLException {
 		
 		String fname, username, lname;
 		
@@ -137,7 +123,7 @@ class PMModel {
 	            	fname = result.getString("fname");
 	            	lname = result.getString("lname");
 	         	            	
-	            	System.out.println("\t   * " + username + " - " + fname + ' ' + lname);
+	            	System.out.println("\t   * " + username + " - " + fname + ' ' + lname + " - " + role);
 	            	
 	            } while (result.next());
 	    } catch (SQLException e){
@@ -149,7 +135,7 @@ class PMModel {
 		
 	}
 
-	public void viewTeamMembers(Scanner sc) throws SQLException {
+    public void viewTeamMembers(Scanner sc) throws SQLException {
         
     	String query1, query2, query3, query4, pID;
     	
@@ -171,7 +157,7 @@ class PMModel {
           	  + "WHERE projectID = ?";
         
         System.out.println("\tThe following are your projects and their IDs. ");
-        viewPMProjects();
+        viewProjects();
         System.out.print("\tEnter the project ID of the team you want to view > ");
         
         pID = sc.nextLine();
@@ -179,13 +165,13 @@ class PMModel {
         System.out.println("\n\t    Team Members of Project " + pID);
         System.out.println("\t-----------------------------------");
         
-        executeTeamQueries(pID, query1);
-        executeTeamQueries(pID, query2);
-        executeTeamQueries(pID, query3);
-        executeTeamQueries(pID, query4);
+        executeTeamQueries(pID, query1, "Developer");
+        executeTeamQueries(pID, query2, "Project Manager");
+        executeTeamQueries(pID, query3, "Admin");
+        executeTeamQueries(pID, query4, "Tester");
 	}
 
-	public void getBugsWithProjectID(String pID) throws SQLException {
+	public void getAssignedBugsWithProjectID(String pID) throws SQLException {
 		
 		String query;
 		
@@ -197,11 +183,12 @@ class PMModel {
 
 		System.out.println("\tDetails of bugs registered in Project " + pID);
         
-        query = "SELECT * FROM bug WHERE projectID = ?";
+        query = "SELECT * FROM bug WHERE bugFixerUName = ? and projectID = ?";
         
         try {
 	        statement = connection.prepareStatement(query);
-	        statement.setString(1, pID);
+	        statement.setString(1, this.username);
+	        statement.setString(2, pID);
 	        result = statement.executeQuery();
 	        if (result.next()) {
 	        	do {
@@ -238,60 +225,41 @@ class PMModel {
 	    }
 	}
 	
-	public void viewAllBugs(Scanner sc) throws SQLException {
+	public String viewAssignedBugs(Scanner sc) throws SQLException {
 		
 		String pID;
 		
 		System.out.println("\tThe following are your projects and their IDs. ");
-        viewPMProjects();
+        viewProjects();
         System.out.print("\n\tEnter the project ID of the team you want to view > ");
         pID = sc.nextLine();
         
-        getBugsWithProjectID(pID);
-	}
-
-	public void viewDevsOnTeam(String pID) throws SQLException {
+        getAssignedBugsWithProjectID(pID);
         
-    	String query;
-    	
-        query = "SELECT d.username, d.fname, d.lname "
-        	  + "FROM developers d JOIN TeamMembers tm "
-        	  + "ON d.username = tm.empUName "
-        	  + "WHERE projectID = ?";
-        
-        System.out.println("\n\t\tDevelopers of Project " + pID);
-        System.out.println("\t-----------------------------------");
-        executeTeamQueries(pID, query);
+        return pID;
 	}
-
-	public void assignOrChangeBugFixer(Scanner sc) throws SQLException {
+	
+	public void changeAssignedBugStatus(Scanner sc) throws SQLException {
 		
-		String pID, bID, devID, update;
+		int status;
+		String pID, bID, update;
 		
 		PreparedStatement statement = null;
-		
-		System.out.println("\tThe following are your projects and their IDs. ");
-        viewPMProjects();
-        System.out.print("\n\tEnter the project ID with the bugs to be altered > ");
-        pID = sc.nextLine();
         
-        getBugsWithProjectID(pID);
+        pID = viewAssignedBugs(sc);
         
         System.out.print("\n\tEnter the bug ID of the bug to be altered > ");
         bID = sc.nextLine();
         
-        System.out.print("\n\tThe following are the usernames of the developers on the team.");
-        viewDevsOnTeam(pID);
+        System.out.print("\n\tEnter status of the bug ('INITIATED' - 1, 'RESOLVED' - 2, 'OVERDUE' - 3) to be changed into > ");
+        status = sc.nextInt(); sc.nextLine();
         
-        System.out.print("\tEnter the username of the new developer > ");
-        devID = sc.nextLine();
-        
-        update = "UPDATE bug SET bugFixerUName=? WHERE bugID=? AND projectID=?";
+        update = "UPDATE bug SET bugStatus=? WHERE bugID=? AND projectID=?";
         
         try {
             statement = this.connection.prepareStatement(update);
-            statement.setString(1, bID);
-            statement.setString(2, devID);
+            statement.setInt(1, status);
+            statement.setString(2, bID);
             statement.setString(3, pID);
             statement.execute();
         } catch (SQLException e) {

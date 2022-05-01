@@ -3,48 +3,44 @@ package bugtrackingapplication;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-class PMController {
+class TestController {
 
+	
 	public void showDashboard(Scanner sc, String username) throws SQLException {	
 		
-		PMModel pmm = new PMModel(username);
+		TestModel tsm = new TestModel(username);
         
         System.out.println("\n\t*********** DASHBOARD ***********");
         
-        pmm.getPMName(username);
-        System.out.println("\tWelcome " + pmm.fname + " " + pmm.lname + "!");
+        System.out.println("\tWelcome " + tsm.fname + " " + tsm.lname + "!");
         
-        displayOptions(sc, pmm);
+        displayOptions(sc, tsm);
 	}
 	
-	private void displayOptions(Scanner sc, PMModel pmm) throws SQLException {
+	private void displayOptions(Scanner sc, TestModel tsm) throws SQLException {
 		
 		boolean loop = true;
 		
 		System.out.println("\n\t****** MENU (Choose option) ****");
 		System.out.println("\t1. View all projects\n"
 						 + "\t2. View team members\n"
-						 + "\t3. View all bugs\n"
-						 + "\t4. Assign/change bug fixer\n"
-						 + "\t5. Sign out");
+						 + "\t3. Add new bug to project\n"
+						 + "\t4. Sign out");
 		do {
 			System.out.print("\n\tEnter your option > ");
 			int option = sc.nextInt(); sc.nextLine();
 			
 			switch(option) {
 			case 1:
-				pmm.viewPMProjects();
+				tsm.viewProjects();
 				break;
 			case 2:
-				pmm.viewTeamMembers(sc);
+				tsm.viewTeamMembers(sc);
 				break;
 			case 3:
-				pmm.viewAllBugs(sc);
+				tsm.addNewBug(sc);
 				break;
 			case 4:
-				pmm.assignOrChangeBugFixer(sc);
-				break;
-			case 5:
 				loop = false;
 				break;
 			default:
